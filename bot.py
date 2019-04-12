@@ -16,7 +16,7 @@ os.chdir(r"C:\\Users\\path\\to\\your\\bot's\\directory")
 
 @client.event
 async def on_ready():
-	owner = await client.get_user_info(OWNER)
+	owner = await client.get_user_info(OWNER_ID)
 	await client.send_message(owner, "Ready")
 
 @client.command(pass_context=True)
