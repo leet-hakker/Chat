@@ -12,12 +12,18 @@ import requests
 command_prefix='?!'
 client = commands.Bot(command_prefix)
 client.remove_command("help")
-os.chdir(r"C:\\Users\\path\\to\\your\\bot's\\directory")
+os.chdir(r"C:\\Users\\benha\\Documents\\Coding\\Python\\DiscordBots\\Chat")
 
 @client.event
 async def on_ready():
-	owner = await client.get_user_info(OWNER_ID)
+	owner = await client.get_user_info("330404011197071360")
 	await client.send_message(owner, "Ready")
+
+@client.command(pass_context=False)
+async def bug(message):
+	embed = discord.Embed(title="Bug Report", url=message.guild)
+
+	await client.channels.get('566282530530131978').send(embed=embed)
 
 @client.command(pass_context=True)
 async def info(ctx):
@@ -27,25 +33,28 @@ async def info(ctx):
 
 #The following command uses code from Coding Yabe Sei (https://github.com/Academy-Of-Animu/Coding-Yabe-Sei) that I translated into python.
 
-#Thank you to IllusionMan1212#6370 for explaining to me what the fuck that regex was as it allowed me to convert it into and if statement because I can't be bothered to learn regex.
+#Thank you to IllusionMan1212#6370 for explaining to me what the fuck that regex was as it allowed me to convert it into an if statement because I can't be bothered to learn regex.
 
 @client.command(pass_context=True)
 async def translate(ctx, message):
 	try:
+		#putting the message into an array
 		args = ctx.message.content.split()
+		#removing the command
 		args.pop(0)
+		#will be run if you entered languages and some text
 		if len(args) > 2:
 			args.append(args[2])
 			args[2] = args[1]
-			args[0], args[1] = args[0].split('-')
 
+			#this unfriendliness here is me filtering out the characters I don't want very ineffieciently
 			for i in '!*();,:@&=+$./?%#\\':
 				for j in range(len(args)):
 					if j > 1:
 						if i in args[j]:
 							args[j] = args[j].replace(i, '')
 
-
+		#languages Chat can translate
 		langs = {
 		        'af': 'Afrikaans',
 		        'sq': 'Albanian',
@@ -155,6 +164,7 @@ async def translate(ctx, message):
 		        'zu': 'Zulu',
 		    }
 
+		#run if you asked for "chat translate list". Returns an embed of all the languages Chat can translate
 		if args[0] == 'list':
 			listOfDLangs = ''
 
@@ -171,43 +181,55 @@ async def translate(ctx, message):
 			return
 
 		else:
-
-			sourceLang = args[0]
-			targetLang = args[1]
+			#Translation part
+			#Getting the sourceLang and targetLang from the first
+			sourceLang = args[0].split('-')[0]
+			targetLang = args[0].split('-')[1]
 			words = []
+			#putting the words into an array
 			for l in range(len(args)):
-				if l >= 3:
+				if l >= 1:
 					words.append(args[l])
 
+			#you dum fok
 			if sourceLang not in langs:
-				return await client.say(f'Source language \`{sourceLang}\` doesn\'t exist.\n(if you believe this is wrong make a bug report using \`?!bug\`)')
+				return await client.say(f'Source language `{sourceLang}` doesn\'t exist.\n(if you believe this is wrong make a bug report using `?!bug `)')
 			if targetLang not in langs:
-				return await client.say('Target Language \`${targetLang}\` doesn\'t exist.\n(if you believe this is wrong make a bug report using\`?!bug\`)')
+				return await client.say('Target Language `{targetLang}` doesn\'t exist.\n(if you believe this is wrong make a bug report using `?!bug `)')
+
+			#if words is empty, you didn't enter anything to translate
 			if words == "":
 				return await client.say('Please provide a word or sentence to translate.')
 
+			#putting the words back into a string
 			words2translate = ""
 			for m in range(len(words)):
 				words2translate += words[m].lower() + ""
 
+			#The actual link for translations
 			link = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl={sourceLang}&tl=${targetLang}&dt=t&ie=UTF-8&oe=UTF-8&q={urllib.parse.quote(words2translate)}'
 
 
 			try:
+				#getting a json pull of the site
 				translation = requests.get(link).json()
+				#putting said json pull into a nice embed
 				embed = discord.Embed(
 					description=(translation[0][0][0]),
 					color=(0x1355A4))
+				#outputting the embed and the translation source and target
 				await client.say(f'Translated from {langs[sourceLang]} to {langs[targetLang]}:')
 				await client.say(embed=embed)
 
+			#Error handling - site may have changed, gone down etc
 			except Exception as e:
 				print(e)
 				await client.say("Something went wrong while translating, please check you formatted it correctly and try again.\nOr if you believe this is a bug please report it with `?!bug`")
 
+	#Chat doesn't know wtf went wrong
 	except Exception as e:
-		print(e)
+		raise e
 		await client.say("Something went wrong while translating, please check you formatted it correctly and try again.\nOr if you believe this is a bug please report it with `?!bug`")
 
 
-client.run(YOUR_API_TOKEN)
+client.run('NTYzNzY4OTgwMzYwMzk2ODIx.XKeI-w.-A78bRxjFMDil1L9U3rwdbDhv1s')
