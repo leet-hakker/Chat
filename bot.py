@@ -27,7 +27,7 @@ async def info(ctx):
 
 #The following command uses code from Coding Yabe Sei (https://github.com/Academy-Of-Animu/Coding-Yabe-Sei) that I translated into python.
 
-#Thank you to IllusionMan1212 for explaining to me what the fuck that regex was as it allowed me to convert it into and if statement because I can't be bothered to learn regex.
+#Thank you to IllusionMan1212#6370 for explaining to me what the fuck that regex was as it allowed me to convert it into and if statement because I can't be bothered to learn regex.
 
 @client.command(pass_context=True)
 async def translate(ctx, message):
