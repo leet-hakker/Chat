@@ -12,11 +12,11 @@ import requests
 command_prefix='?!'
 client = commands.Bot(command_prefix)
 client.remove_command("help")
-os.chdir(r"C:\\Users\\benha\\Documents\\Coding\\Python\\DiscordBots\\Chat")
+os.chdir(r"C:\\Users\\path\\to\\your\\bot's\\directory")
 
 @client.event
 async def on_ready():
-	owner = await client.get_user_info("330404011197071360")
+	owner = await client.get_user_info(OWNER)
 	await client.send_message(owner, "Ready")
 
 @client.command(pass_context=True)
@@ -210,4 +210,4 @@ async def translate(ctx, message):
 		await client.say("Something went wrong while translating, please check you formatted it correctly and try again.\nOr if you believe this is a bug please report it with `?!bug`")
 
 
-client.run('NTYzNzY4OTgwMzYwMzk2ODIx.XKeI-w.-A78bRxjFMDil1L9U3rwdbDhv1s')
+client.run(YOUR_API_TOKEN)
