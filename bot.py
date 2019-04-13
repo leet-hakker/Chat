@@ -7,6 +7,9 @@ import os
 import json
 import urllib.parse
 import requests
+from PyDictionary import PyDictionary
+
+dictionary=PyDictionary()
 
 
 command_prefix='?!'
@@ -16,14 +19,29 @@ os.chdir(r"C:\\Users\\benha\\Documents\\Coding\\Python\\DiscordBots\\Chat")
 
 @client.event
 async def on_ready():
+	print("Ready")
 	owner = await client.get_user_info("330404011197071360")
 	await client.send_message(owner, "Ready")
 
-@client.command(pass_context=False)
-async def bug(message):
-	embed = discord.Embed(title="Bug Report", url=message.guild)
+@client.command(pass_context=True)
+async def bug(ctx):
+	#putting the message into an array
+	args = ctx.message.content.split()
+	#removing the command
+	args.pop(0)
 
-	await client.channels.get('566282530530131978').send(embed=embed)
+	words = []
+	#putting the words into an array
+	for l in range(len(args)):
+		words.append(args[l])
+
+	bugcontent = ""
+	for n in range(len(words)):
+		bugcontent += words[n] + " "
+
+	embed = discord.Embed(title="Bug Report", description=bugcontent, color=0x41d8a7)
+
+	await client.send_message(client.get_channel('566282530530131978'), embed=embed)
 
 @client.command(pass_context=True)
 async def info(ctx):
@@ -46,6 +64,8 @@ async def translate(ctx, message):
 		if len(args) > 2:
 			args.append(args[2])
 			args[2] = args[1]
+
+
 
 			#this unfriendliness here is me filtering out the characters I don't want very ineffieciently
 			for i in '!*();,:@&=+$./?%#\\':
@@ -204,7 +224,7 @@ async def translate(ctx, message):
 			#putting the words back into a string
 			words2translate = ""
 			for m in range(len(words)):
-				words2translate += words[m].lower() + ""
+				words2translate += words[m].lower() + " "
 
 			#The actual link for translations
 			link = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl={sourceLang}&tl=${targetLang}&dt=t&ie=UTF-8&oe=UTF-8&q={urllib.parse.quote(words2translate)}'
@@ -231,5 +251,41 @@ async def translate(ctx, message):
 		raise e
 		await client.say("Something went wrong while translating, please check you formatted it correctly and try again.\nOr if you believe this is a bug please report it with `?!bug`")
 
+@client.command(pass_context=True)
+async def define(ctx):
+	#putting the message into an array
+	args = ctx.message.content.split()
+	#removing the command
+	args.pop(0)
 
-client.run('NTYzNzY4OTgwMzYwMzk2ODIx.XKeI-w.-A78bRxjFMDil1L9U3rwdbDhv1s')
+	words = []
+	#putting the words into an array
+	for l in range(len(args)):
+		words.append(args[l])
+
+	#taking the first word of the message as the word to be defined
+	definecontent = words[0]
+
+	try:
+		#getting neccesary info for the word
+		wordinfo = dictionary.meaning(definecontent)
+		wordclasses=[]
+		meanings=[]
+		for p in wordinfo.keys():
+			wordclasses.append(p)
+			meanings.append(wordinfo[p])
+
+		#putting it all into an embed
+		embed=discord.Embed(title=definecontent, description=f"Found {len(meanings)} definitions for {definecontent}", color=0x1355A4)
+		for o in range(len(meanings)):
+			for q in range(len(meanings[o])):
+				embed.add_field(name=f"{o+1} - {q+1})", value=f"{wordclasses[o]}:\n{meanings[o][q]}", inline=False)
+
+		#outputting the embed
+		await client.send_message(ctx.message.channel, embed=embed)
+	except:
+		await client.send_message(ctx.message.channel, "Something went wrong while getting your definition. This may be caused due to the word you inputted not being in the dictionary. Please try again later.\nIf you feel this is wrong use `?!bug` to report the error.")
+
+
+
+client.run('YOUR_API_KEY')
