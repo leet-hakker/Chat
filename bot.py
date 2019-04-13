@@ -213,9 +213,9 @@ async def translate(ctx, message):
 
 			#you dum fok
 			if sourceLang not in langs:
-				return await client.say(f'Source language `{sourceLang}` doesn\'t exist.\n(if you believe this is wrong make a bug report using `?!bug `)')
+				return await client.say(f'Source language `{sourceLang}` doesn\'t exist.\nTo get a list of languages Chat can translate, use `?!translate list`\n(if you believe this is wrong make a bug report using `?!bug `)')
 			if targetLang not in langs:
-				return await client.say('Target Language `{targetLang}` doesn\'t exist.\n(if you believe this is wrong make a bug report using `?!bug `)')
+				return await client.say('Target Language `{targetLang}` doesn\'t exist.\nTo get a list of languages Chat can translate, use `?!translate list`\n(if you believe this is wrong make a bug report using `?!bug `)')
 
 			#if words is empty, you didn't enter anything to translate
 			if words == "":
@@ -227,7 +227,7 @@ async def translate(ctx, message):
 				words2translate += words[m].lower() + " "
 
 			#The actual link for translations
-			link = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl={sourceLang}&tl=${targetLang}&dt=t&ie=UTF-8&oe=UTF-8&q={urllib.parse.quote(words2translate)}'
+			link = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl={sourceLang}&tl={targetLang}&dt=t&ie=UTF-8&oe=UTF-8&q={urllib.parse.quote(words2translate)}'
 
 
 			try:
@@ -244,12 +244,12 @@ async def translate(ctx, message):
 			#Error handling - site may have changed, gone down etc
 			except Exception as e:
 				print(e)
-				await client.say("Something went wrong while translating, please check you formatted it correctly and try again.\nOr if you believe this is a bug please report it with `?!bug`")
+				await client.say("Something went wrong while translating, please check you formatted it correctly and try again later.\nOr if you believe this is a bug please report it with `?!bug`")
 
 	#Chat doesn't know wtf went wrong
 	except Exception as e:
 		raise e
-		await client.say("Something went wrong while translating, please check you formatted it correctly and try again.\nOr if you believe this is a bug please report it with `?!bug`")
+		await client.say("Something went wrong while translating, please check you formatted it correctly and try again later.\nOr if you believe this is a bug please report it with `?!bug`")
 
 @client.command(pass_context=True)
 async def define(ctx):
@@ -288,4 +288,4 @@ async def define(ctx):
 
 
 
-client.run('YOUR_API_KEY')
+client.run('YOUR_TOKEN_HERE')
