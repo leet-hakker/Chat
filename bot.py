@@ -12,16 +12,42 @@ from PyDictionary import PyDictionary
 dictionary=PyDictionary()
 
 
+embedcolor = 0x41d8a7
 command_prefix='?!'
 client = commands.Bot(command_prefix)
 client.remove_command("help")
 os.chdir(r"C:\\Users\\benha\\Documents\\Coding\\Python\\DiscordBots\\Chat")
+
+commands = 	{
+				"help":"returns this help message",
+				"info":"returns info on the bot",
+				"translate":"returns a translation for a given word. e.g. `?!translate es-en como estas`\nTo find a list of words Chat can translate, use `?!translate list`",
+				"define":"returns a list of definitions for a word. e.g. `?!define bus`",
+				"bug":"used to report a bug with Chat. e.g. `?!bug My cat is ill.`"
+			}
 
 @client.event
 async def on_ready():
 	print("Ready")
 	owner = await client.get_user_info("330404011197071360")
 	await client.send_message(owner, "Ready")
+
+@client.command(pass_context=True)
+async def help(ctx):
+	author = ctx.message.author
+	embed = discord.Embed	(
+							title="**Commands**",
+							description="**Here is a list of commands that Chat can use:**",
+							color=embedcolor
+							)
+	for i in commands:
+		embed.add_field(name=i, value=commands[i], inline=False)
+	try:
+		await client.send_message(author, embed=embed)
+		await client.add_reaction(ctx.message, '✉')
+	except Exception as e:
+		await client.say("Something went wrong. Try again later, or if you think this is wrong, you can report it using `?!bug`")
+		raise e
 
 @client.command(pass_context=True)
 async def bug(ctx):
@@ -39,13 +65,13 @@ async def bug(ctx):
 	for n in range(len(words)):
 		bugcontent += words[n] + " "
 
-	embed = discord.Embed(title="Bug Report", description=bugcontent, color=0x41d8a7)
+	embed = discord.Embed(title="Bug Report", description=bugcontent, color=embedcolor)
 
 	await client.send_message(client.get_channel('566282530530131978'), embed=embed)
 
 @client.command(pass_context=True)
 async def info(ctx):
-    embed=discord.Embed(title="Chat", url="https://discordapp.com/api/oauth2/authorize?client_id=563768980360396821&permissions=8&redirect_uri=https%3A%2F%2Fdiscordapp.com%2Foauth2%2Fauthorize%3Fclient_id%3D563768980360396821%26scope%3Dbot%26permissions%3D8&response_type=code&scope=messages.read%20bot", description="Chat is a Machine Learning Discord Bot created by user leet_hakker#2582 to provide users with the best interaction possible. Currently still a WIP.", color=0x41d8a7)
+    embed=discord.Embed(title="Chat", url="https://discordapp.com/api/oauth2/authorize?client_id=563768980360396821&permissions=8&redirect_uri=https%3A%2F%2Fdiscordapp.com%2Foauth2%2Fauthorize%3Fclient_id%3D563768980360396821%26scope%3Dbot%26permissions%3D8&response_type=code&scope=messages.read%20bot", description="Chat is a Machine Learning Discord Bot created by user leet_hakker#2582 to provide users with the best interaction possible. Currently still a WIP.", color=embedcolor)
     await client.say(embed=embed)
 
 
@@ -192,7 +218,7 @@ async def translate(ctx, message):
 				listOfDLangs += f'{langs.get(k)} - {k}\n'
 
 			embed1 = discord.Embed(
-				color=(0x1355A4),
+				color=(embedcolor),
 				title=('List of languages Chat can translate:'),
 				description=(listOfDLangs))
 			embed1.add_field(name="How to use: ", value='?!translate lang1-lang2 <stuff to translate>', inline=False)
@@ -236,14 +262,14 @@ async def translate(ctx, message):
 				#putting said json pull into a nice embed
 				embed = discord.Embed(
 					description=(translation[0][0][0]),
-					color=(0x1355A4))
+					color=(embedcolor))
 				#outputting the embed and the translation source and target
 				await client.say(f'Translated from {langs[sourceLang]} to {langs[targetLang]}:')
 				await client.say(embed=embed)
 
 			#Error handling - site may have changed, gone down etc
 			except Exception as e:
-				print(e)
+				raise e
 				await client.say("Something went wrong while translating, please check you formatted it correctly and try again later.\nOr if you believe this is a bug please report it with `?!bug`")
 
 	#Chat doesn't know wtf went wrong
@@ -276,16 +302,17 @@ async def define(ctx):
 			meanings.append(wordinfo[p])
 
 		#putting it all into an embed
-		embed=discord.Embed(title=definecontent, description=f"Found {len(meanings)} definitions for {definecontent}", color=0x1355A4)
+		embed=discord.Embed(title=definecontent, description=f"Found {len(meanings)} definitions for \"{definecontent}\"", color=embedcolor)
 		for o in range(len(meanings)):
 			for q in range(len(meanings[o])):
 				embed.add_field(name=f"{o+1} - {q+1})", value=f"{wordclasses[o]}:\n{meanings[o][q]}", inline=False)
 
 		#outputting the embed
 		await client.send_message(ctx.message.channel, embed=embed)
-	except:
+	except Exception as e:
+		raise e
 		await client.send_message(ctx.message.channel, "Something went wrong while getting your definition. This may be caused due to the word you inputted not being in the dictionary. Please try again later.\nIf you feel this is wrong use `?!bug` to report the error.")
 
 
 
-client.run('YOUR_TOKEN_HERE')
+client.run('YOUR_API_TOKEN')
